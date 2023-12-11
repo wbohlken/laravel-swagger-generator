@@ -77,6 +77,12 @@ return [
     'ignoredAnnotationNames' => ['mixin'],
     /*
     |---------------------------------------------------------
+    | Use camel case for operation IDs instead of dots
+    |---------------------------------------------------------
+    */
+    'camelCaseOperationIds' => false,
+    /*
+    |---------------------------------------------------------
     | List of classes to additionally generate definitions
     |---------------------------------------------------------
     |
@@ -90,4 +96,23 @@ return [
     |
      */
     'generateDefinitions' => [],
+
+    'defaultResponses' => [
+        'ok' => [
+            'response' => [
+                'success' => true,
+                'message' => 'OK',
+                'result' => false,
+            ],
+            'resultKey' => 'properties.result',
+        ],
+        'error' => [
+            'response' => [
+                'success' => false,
+                'message' => 'Error',
+                'errors' => [],
+            ],
+            'resultKey' => 'properties.errors',
+        ],
+    ],
 ];
