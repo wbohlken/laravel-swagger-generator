@@ -83,6 +83,12 @@ return [
     'camelCaseOperationIds' => false,
     /*
     |---------------------------------------------------------
+    | Generate objects inside 'components.schemas' instead of 'components.x-objects'
+    |---------------------------------------------------------
+    */
+    'generateObjectsAsSchemas' => false,
+    /*
+    |---------------------------------------------------------
     | List of classes to additionally generate definitions
     |---------------------------------------------------------
     |
