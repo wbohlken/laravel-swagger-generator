@@ -154,11 +154,11 @@ class RoutesParser
 
         $tag = ! empty($routeData['tags']) ? reset($routeData['tags']) : 'default';
         $routeData['operationId'] = $this->getRouteId($route, $tag);
-        if ($camelCaseOperationIds) {
-            $routeData['operationId'] = Str::camel(str_replace('.', '_', $routeData['operationId']));
-        }
         if ($unversionedOperationIds) {
             $routeData['operationId'] = preg_replace('/v[0-9](\.([0-9])*)?\./u', '', $routeData['operationId']);
+        }
+        if ($camelCaseOperationIds) {
+            $routeData['operationId'] = Str::camel(str_replace('.', '_', $routeData['operationId']));
         }
         $path = $this->normalizeUri($route->uri(), true);
         $methods = array_intersect($route->methods, $documentedMethods);
