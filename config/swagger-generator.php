@@ -83,6 +83,12 @@ return [
     'camelCaseOperationIds' => false,
     /*
     |---------------------------------------------------------
+    | Remove version numbers (e.g. 'v3.') from routes in operation ids.
+    |---------------------------------------------------------
+     */
+    'unversionedOperationIds' => false,
+    /*
+    |---------------------------------------------------------
     | Generate objects inside 'components.schemas' instead of 'components.x-objects'
     |---------------------------------------------------------
     */

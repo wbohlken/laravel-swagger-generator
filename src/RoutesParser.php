@@ -90,6 +90,7 @@ class RoutesParser
         $matchesNot = config('swagger-generator.routes.notMatches', []);
         $documentedMethods = config('swagger-generator.routes.methods', ['GET']);
         $camelCaseOperationIds = config('swagger-generator.camelCaseOperationIds', false);
+        $unversionedOperationIds = config('swagger-generator.unversionedOperationIds', false);
         $this->routeNum = 1;
         foreach ($this->routes as $route) {
             if (! $this->checkRoute($route, $matches, $matchesNot, $only, $except)) {
@@ -100,7 +101,7 @@ class RoutesParser
             if ($ref instanceof \ReflectionFunction) {
                 $this->trigger(static::EVENT_PROBLEM_FOUND, static::PROBLEM_ROUTE_CLOSURE, $route);
             }
-            $this->parseRoute($paths, $route, $documentedMethods, $this->routeNum, $camelCaseOperationIds);
+            $this->parseRoute($paths, $route, $documentedMethods, $this->routeNum, $camelCaseOperationIds, $unversionedOperationIds);
             ++$this->routeNum;
             $this->trigger(static::EVENT_ROUTE_PROCESSED, $route);
         }
@@ -118,7 +119,7 @@ class RoutesParser
      * @param  int                       $num
      * @return array
      */
-    protected function parseRoute(array &$data, Route $route, array $documentedMethods, int $num = 1, bool $camelCaseOperationIds = false): array
+    protected function parseRoute(array &$data, Route $route, array $documentedMethods, int $num = 1, bool $camelCaseOperationIds = false, bool $unversionedOperationIds = false): array
     {
         $routeWoBody = ! empty(array_intersect(['GET', 'HEAD'], $route->methods));
         $routeData = [
@@ -155,6 +156,9 @@ class RoutesParser
         $routeData['operationId'] = $this->getRouteId($route, $tag);
         if ($camelCaseOperationIds) {
             $routeData['operationId'] = Str::camel(str_replace('.', '_', $routeData['operationId']));
+        }
+        if ($unversionedOperationIds) {
+            $routeData['operationId'] = preg_replace('/v[0-9](\.([0-9])*)?\./u', '', $routeData['operationId']);
         }
         $path = $this->normalizeUri($route->uri(), true);
         $methods = array_intersect($route->methods, $documentedMethods);
@@ -458,10 +462,8 @@ class RoutesParser
                 continue;
             }
             $properties = $bodyByContentType['schema']['properties'];
-            $requiredProperties = $bodyByContentType['schema']['required'] ?? [];
             foreach ($properties as $property => $row) {
                 $type = $row['type'] ?? null;
-                $row['required'] = in_array($property, $requiredProperties, true);
                 $paramName = $property;
                 // Parse objects
                 if ($type === Variable::SW_TYPE_OBJECT) {
